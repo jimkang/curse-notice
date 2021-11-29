@@ -150,7 +150,7 @@ button:focus {
     inset 0rem 0.25rem 1.25rem -0.15rem hsl(0deg 0% 0% / 60%),
     inset 0 -3.75rem 0.5rem -4rem hsl(208deg 21% 14% / 0%); */
 }
-    
+
 .inner-shine {
   margin-left: 5.5%;
   margin-top: 5%;
@@ -318,4 +318,11 @@ button:focus {
 footer {
   text-align: center;
   margin-bottom: 4rem;
+}
+
+.dialog-text {
+  font-family: joystix;
+  color: white;
+  background: transparent;
+  border: none;
 }
