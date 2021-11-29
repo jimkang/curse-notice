@@ -143,12 +143,12 @@ button:focus {
   position: relative;
   /*! width: 256px; */
   /*! height: 256px; */
-  border-radius: 22%;
+  /*! border-radius: 22%; */
   /*! background: linear-gradient(to bottom, hsl(209deg 40% 62%) 35%, hsl(209deg 22% 50%) 70%); */
   margin-bottom: 1em;
-  box-shadow:
+  /*! box-shadow:
     inset 0rem 0.25rem 1.25rem -0.15rem hsl(0deg 0% 0% / 60%),
-    inset 0 -3.75rem 0.5rem -4rem hsl(208deg 21% 14% / 0%);
+    inset 0 -3.75rem 0.5rem -4rem hsl(208deg 21% 14% / 0%); */
 }
     
 .inner-shine {

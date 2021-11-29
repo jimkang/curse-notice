@@ -4,6 +4,8 @@ import handleError from 'handle-error-web';
 import curry from 'lodash.curry';
 import kebabCase from 'lodash.kebabcase';
 import domToImage from 'dom-to-image';
+import { select } from 'd3-selection';
+import { zoom as Zoom } from 'd3-zoom';
 
 const DEFAULT_VALUES = {
   kerning: '0.000',
@@ -68,6 +70,7 @@ function followRoute({
   altBg = DEFAULT_VALUES.altBg,
   altBgOpacity = DEFAULT_VALUES.altBgOpacity,
 }) {
+  /*
   updateForm({
     text,
     fontSize,
@@ -86,6 +89,18 @@ function followRoute({
     altBg,
     altBgOpacity,
   });
+  */
+
+  var board = select('.board');
+  var zoomLayer = board.select('.zoom-layer');
+  var zoom = Zoom()
+    .scaleExtent([1, 8])
+    .on('zoom', zoomed);
+  board.call(zoom);
+
+  function zoomed(zoomEvent) {
+    zoomLayer.attr('transform', zoomEvent.transform);
+  }
 }
 
 function updateForm({ text, fontSize, kerning, altBg, altBgOpacity }) {
