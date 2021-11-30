@@ -221,7 +221,7 @@ button:focus {
 .form, .preview {
   width: 90%;
   max-width: 500px;
-  text-align: center;
+  /*! text-align: center; */
   margin:0 auto;
 }
 
@@ -332,4 +332,11 @@ footer {
   color: white;
   background: transparent;
   border: none;
+  margin-left: 0.8em;
+  font-size: 22px;
+  margin-top: 0.6em;
+  width: 210px;
+  /*! box-sizing: border-box; */
+  /*! display: flex; */
+  /*! flex-wrap: wrap; */
 }
