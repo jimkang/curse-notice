@@ -1,3 +1,10 @@
+@font-face {
+  font-family: pixel-emulator;
+  src: url('PixelEmulator-xq08.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal
+}
+
 :root {
   /* default light theme */
   --text-color: #333;
@@ -321,7 +328,7 @@ footer {
 }
 
 .dialog-text {
-  font-family: joystix;
+  font-family: pixel-emulator;
   color: white;
   background: transparent;
   border: none;
