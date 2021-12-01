@@ -25,3 +25,6 @@ set-up-server-dir:
 
 run:
 	./node_modules/.bin/rollup -c -w
+
+encode-images:
+	./tools/encode-images.sh src/images src/images-b64

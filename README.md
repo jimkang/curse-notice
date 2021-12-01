@@ -28,6 +28,13 @@ If the font isn't embedded in the svg, it won't appear in the generated png. So,
 - Run `base64 -w 0 src/PixelEmulator-xq08.ttf > src/pixel-emulator-ttf.base64`
 - Paste the contents of `src/pixel-emulator-ttf.base64` into the src attribute of the `@font-face` inside the `<style>` tag in the svg in index.html *after* the `data:application/font-truetype;base64,` part of the line.
 
+## Embedding the images in the svg
+
+If the images aren't embedded in the svg, they won't appear in the generated png. So, to embed them:
+
+- Run `make encode-images`.
+- Paste the contents of the images you want in `src/images-b64` into the href attribute of the `<image>` tags inside the svg in index.html.
+
 ## Building and running in production mode
 
 To create an optimised version of the app:

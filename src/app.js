@@ -95,7 +95,7 @@ function renderCollage({ text, fontSize, kerning }) {
 }
 
 function updateForm({ text, fontSize, kerning, }) {
-  dialogTextEl.value = text;
+  dialogTextEl.textContent = text;
   fontSizeSliderEl.value = fontSize;
   fontSizeLabelEl.textContent = fontSize;
 
