@@ -21,6 +21,13 @@ npm run dev
 
 Navigate to [localhost:5000](http://localhost:5000). You should see your app running. Edit a component file in `src`, save it, and reload the page to see your changes.
 
+## Embedding the font in the svg
+
+If the font isn't embedded in the svg, it won't appear in the generated png. So, to embed it:
+
+- Run `base64 -w 0 src/PixelEmulator-xq08.ttf > src/pixel-emulator-ttf.base64`
+- Paste the contents of `src/pixel-emulator-ttf.base64` into the src attribute of the `@font-face` inside the `<style>` tag in the svg in index.html *after* the `data:application/font-truetype;base64,` part of the line.
+
 ## Building and running in production mode
 
 To create an optimised version of the app:
