@@ -1,6 +1,8 @@
 # curse-notice
 
-A small app for making those gray-blue rounded square emoji.
+A small app for making Castlevania 2 message images.
+
+(Not yet working.)
 
 ## Development
 

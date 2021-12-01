@@ -16,12 +16,10 @@
     <main class="centered-col">
       <h1>Curse Notice</h1>
 
+      <div>Click in the box to change the message. Click, drag, and zoom the background until it's where you want it to be. Then, hit "Build png".</div>
+
       <section class="form">
         <ul>
-          <li>
-            <h3>Text:</h3>
-            <input id="text-field" type="text" value="text">
-          </li>
           <li>
             <h3>Font size:</h3>
             <div class="slider-subform">
@@ -36,13 +34,14 @@
               <span id="kerning-label" class="range-label">0.000</span>em
             </div>
           </li>
+<!--
           <li class="advanced-controls hidden">
-            <h3><label class="clickable-heading">Use pixelated emoji background: <input id="alt-bg-toggle" type="checkbox" value="false" /></label></h3>
             <div id="alt-bg-controls" class="slider-subform">
               <input id="alt-bg-opacity-slider" class="slider" type="range" width="80%" value="0" min="0" max="100">
               <span id="alt-bg-opacity-label" class="range-label">0</span>%
             </div>
           </li>
+-->
         </ul>
         <button class="form-expander hidden" type="button">More</button>
       </section>
@@ -62,7 +61,7 @@
             </g>
           </svg>
         </div>
-        <button type="button" id="build-button">Build it</button>
+        <button type="button" id="build-button">Build png</button>
       </section>
 
       <section class="result hidden centered-col">
@@ -70,25 +69,13 @@
 
         <div id="status-message" class="hidden"></div>
 
-        <img id="result-image" width="256" height="256"></img>
+        <img id="result-image" width="512" height="448"></img>
         <a id="download-link" class="link-button">Download it!</a>
         <div class="hidden" id="result-instruction">Right-click or long press that thing and download it!</div>
-        <div class="preview-helpers">
-          <h3>Slack Preview Zone</h3>
-          <div class="preview-light">
-            <img id="result-image-sm" width="32" height="32"></img>
-            <img id="result-image-xs" width="20" height="20"></img>
-          </div>
-          <div class="preview-dark">
-            <img id="result-image-sm-dk" width="32" height="32"></img>
-            <img id="result-image-xs-dk" width="20" height="20"></img>
-          </div>
-        </div>
-
       </section>
     </main>
 
-    <footer>Text controls via code <a href="https://github.com/esjay/">Wayne</a> wrote for <a href="https://jimkang.com/emojipress">Emojipress</a>)</footer>
+    <footer>Big Castlevania thanks to <a href="https://github.com/esjay/">Wayne</a>, who wrote the text and theme controls for <a href="https://jimkang.com/emojipress">Emojipress</a>!</footer>
     <div class="meta-controls">
       <button type="button" id="dark-theme-toggle">Toggle Dark Theme</button>
       <div id="version-info"></div>
