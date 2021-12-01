@@ -12,8 +12,9 @@ const DEFAULT_VALUES = {
 };
 
 const advancedControlsParams = ['kerning', 'altBg', 'altBgOpacity'];
-var formWired = false;
+var controlsWired = false;
 var advancedControlsAreVisible = false;
+var nowInsideOfDialogBox = false;
 
 var faviconEl = document.querySelector('link[rel~=icon]');
 var dialogTextEl = document.querySelector('.dialog-text');
@@ -63,7 +64,7 @@ function followRoute({
     kerning,
   });
   renderCollage({ text, fontSize, kerning });
-  wireForm({
+  wireControls({
     kerning,
     altBg,
     altBgOpacity,
@@ -90,6 +91,9 @@ function renderCollage({ text, fontSize, kerning }) {
   board.call(zoom.transform, zoomIdentity.translate(-1100, -50));
  
   function zoomed(zoomEvent) {
+    if (nowInsideOfDialogBox) {
+      return;
+    }
     zoomLayer.attr('transform', zoomEvent.transform);
   }
 }
@@ -103,8 +107,8 @@ function updateForm({ text, fontSize, kerning, }) {
   kerningLabelEl.textContent = kerning;
 }
 
-function wireForm({kerning, altBg, altBgOpacity}) {
-  if (formWired) {
+function wireControls({kerning, altBg, altBgOpacity}) {
+  if (controlsWired) {
     return;
   }
 
@@ -145,7 +149,10 @@ function wireForm({kerning, altBg, altBgOpacity}) {
     setThemeInfo();
   });
 
-  formWired = true;
+  dialogTextEl.addEventListener('click', flagInsideDialogBox);
+  document.body.addEventListener('click', unflagInsideDialogBox);
+
+  controlsWired = true;
 }
 
 function updateRoute(prop, inputEl, e) {
@@ -210,3 +217,13 @@ function setThemeInfo() {
   document.documentElement.classList.toggle('alt-theme', preferAltTheme);
   darkModeToggle.textContent = `Use ${otherName} theme`;
 }
+
+function flagInsideDialogBox(e) {
+  e.stopImmediatePropagation();
+  nowInsideOfDialogBox = true;
+}
+
+function unflagInsideDialogBox() {
+  nowInsideOfDialogBox = false;
+}
+
