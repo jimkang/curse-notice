@@ -2,7 +2,7 @@
 
 A small app for making Castlevania 2 message images.
 
-(Not yet working.)
+Try it here: https://jimkang.com/curse-notice/
 
 ## Development
 

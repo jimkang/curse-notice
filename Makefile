@@ -3,13 +3,10 @@ include config.mk
 HOMEDIR = $(shell pwd)
 
 pushall: sync
-	git push origin master
+	git push origin main
 
 deploy:
 	npm version patch && make build && make pushall
-
-prettier:
-	prettier --single-quote --write "**/*.html"
 
 build:
 	./node_modules/.bin/rollup -c

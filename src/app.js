@@ -16,7 +16,7 @@ const imgHeight = 448;
 const advancedControlsParams = ['kerning', 'altBg', 'altBgOpacity'];
 var controlsWired = false;
 var advancedControlsAreVisible = false;
-var nowInsideOfDialogBox = false;
+var zoom;
 
 var faviconEl = document.querySelector('link[rel~=icon]');
 var dialogTextEl = document.querySelector('.dialog-text');
@@ -84,18 +84,15 @@ function renderCollage({ text, fontSize, kerning }) {
     dialogTextEl.style.removeProperty('letter-spacing');
   }
 
-  var board = select('.board');
-  var zoomLayer = board.select('.zoom-layer');
-  var zoom = Zoom()
+  var zoomContainer = select('.board');
+  var zoomLayer = zoomContainer.select('.zoom-layer');
+  zoom = Zoom()
     .scaleExtent([1, 32])
     .on('zoom', zoomed);
-  board.call(zoom);
-  board.call(zoom.transform, zoomIdentity.translate(-1100, -50));
+  zoomContainer.call(zoom.transform, zoomIdentity.translate(-1100, -50));
+  zoomContainer.call(zoom);
  
   function zoomed(zoomEvent) {
-    if (nowInsideOfDialogBox) {
-      return;
-    }
     zoomLayer.attr('transform', zoomEvent.transform);
   }
 }
@@ -230,10 +227,10 @@ function setThemeInfo() {
 
 function flagInsideDialogBox(e) {
   e.stopImmediatePropagation();
-  nowInsideOfDialogBox = true;
+  zoom.filter(() => false);
 }
 
 function unflagInsideDialogBox() {
-  nowInsideOfDialogBox = false;
+  zoom.filter(() => true);
 }
 
