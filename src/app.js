@@ -10,6 +10,8 @@ const DEFAULT_VALUES = {
   kerning: '0.000',
   altBg: false,
 };
+const imgWidth = 512;
+const imgHeight = 448;
 
 const advancedControlsParams = ['kerning', 'altBg', 'altBgOpacity'];
 var controlsWired = false;
@@ -34,10 +36,10 @@ var downloadLinkEl = document.getElementById('download-link');
 var buildButtonEl = document.getElementById('build-button');
 var resultImageEl = document.getElementById('result-image');
 var resultSectionEl = document.querySelector('.result');
-var resultInstructionEl = document.getElementById('result-instruction');
 var darkModeToggle = document.getElementById('dark-theme-toggle');
 var darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 var boardEl = document.querySelector('.board');
+var canvasEl = document.querySelector('.working-canvas');
 
 var routeState = RouteState({
   followRoute,
@@ -85,7 +87,7 @@ function renderCollage({ text, fontSize, kerning }) {
   var board = select('.board');
   var zoomLayer = board.select('.zoom-layer');
   var zoom = Zoom()
-    .scaleExtent([1, 8])
+    .scaleExtent([1, 32])
     .on('zoom', zoomed);
   board.call(zoom);
   board.call(zoom.transform, zoomIdentity.translate(-1100, -50));
@@ -177,14 +179,22 @@ function onBuildClick() {
 } 
 
 function renderResult(name, dataURL) {
+  faviconEl.href = dataURL;
+  resultImageEl.addEventListener('load', drawToCanvas);
   resultImageEl.src = dataURL;
 
-  downloadLinkEl.download = name;
-  downloadLinkEl.href = dataURL;
+  function drawToCanvas() {
+    var ctx = canvasEl.getContext('2d');
+    canvasEl.width = imgWidth;
+    canvasEl.height = imgHeight;
+    ctx.drawImage(resultImageEl, 0, 0, imgWidth, imgHeight);
+    canvasEl.toBlob(renderDownloadLink, 'image/png', 1.0);
+  }
 
-  faviconEl.href = dataURL;
-
-  resultInstructionEl.classList.remove('hidden');
+  function renderDownloadLink(blob) {
+    downloadLinkEl.download = name;
+    downloadLinkEl.href = window.URL.createObjectURL(blob);
+  }
 }
 
 function renderVersion() {
