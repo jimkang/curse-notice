@@ -21,6 +21,7 @@ var ctrlState = {
 };
 var zoom;
 var lastTransform;
+var weAreInsideTheDialogBox = false;
 
 var dialogTextEl = document.querySelector('.dialog-text');
 var fontSizeSliderEl = document.getElementById('font-size-slider');
@@ -159,7 +160,8 @@ function wireZoom({ x, y, k }) {
   var zoomLayer = zoomContainer.select('.zoom-layer');
   zoom = Zoom()
     .scaleExtent([1, 32])
-    .on('zoom', zoomed);
+    .on('zoom', zoomed)
+    .filter(() => !weAreInsideTheDialogBox);
   zoomContainer.call(zoom.transform, zoomIdentity.translate(x, y).scale(k));
   zoomContainer.call(zoom);
  
@@ -183,11 +185,11 @@ function transformChangedEnough(transform) {
  
 function flagInsideDialogBox(e) {
   e.stopImmediatePropagation();
-  zoom.filter(() => false);
+  weAreInsideTheDialogBox = true;
 }
 
 function unflagInsideDialogBox() {
-  zoom.filter(() => true);
+  weAreInsideTheDialogBox = false;
 }
 
 function getText() {
