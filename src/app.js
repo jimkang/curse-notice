@@ -1,6 +1,7 @@
 import RouteState from 'route-state';
 import handleError from 'handle-error-web';
 import curry from 'lodash.curry';
+import throttle from 'lodash.throttle';
 import { buildImage } from './build-image';
 import { select } from 'd3-selection';
 import { zoomIdentity, zoom as Zoom } from 'd3-zoom';
@@ -19,6 +20,7 @@ var ctrlState = {
   advancedControlsAreVisible: false
 };
 var zoom;
+var lastTransform;
 
 var dialogTextEl = document.querySelector('.dialog-text');
 var fontSizeSliderEl = document.getElementById('font-size-slider');
@@ -38,6 +40,8 @@ var routeState = RouteState({
   propsToCoerceToBool: ['altBg'],
 });
 
+var throttledUpdateRouteWithZoom = throttle(updateRouteWithZoom, 500);
+
 (function go() {
   window.onerror = reportTopLevelError;
   renderVersion();
@@ -50,13 +54,16 @@ function followRoute({
   kerning = DEFAULT_VALUES.kerning,
   altBg = DEFAULT_VALUES.altBg,
   altBgOpacity = DEFAULT_VALUES.altBgOpacity,
+  x = -1100,
+  y = -150,
+  k = 1.0  
 }) {
   updateForm({
     text,
     fontSize,
     kerning,
   });
-  wireZoom();
+  wireZoom({ x: +x, y: +y, k: +k });
   wireControls({
     kerning,
     altBg,
@@ -127,6 +134,14 @@ function updateRoute(prop, getVal, e) {
   routeState.addToRoute({ [prop]: getVal() });
 }
 
+function updateRouteWithZoom(transform) {
+  routeState.addToRoute({
+    x: transform.x.toFixed(2),
+    y: transform.y.toFixed(2),
+    k: transform.k.toFixed(2)
+  });
+}
+
 function onBuildClick() {
   buildImage({ text: dialogTextEl.textContent });
 }
@@ -139,20 +154,33 @@ function areAdvancedControlsModified (controlValues) {
   return advancedControlsParams.some((param) => DEFAULT_VALUES[param] !== controlValues[param]);
 }
 
-function wireZoom() {
+function wireZoom({ x, y, k }) {
   var zoomContainer = select('.board');
   var zoomLayer = zoomContainer.select('.zoom-layer');
   zoom = Zoom()
     .scaleExtent([1, 32])
     .on('zoom', zoomed);
-  zoomContainer.call(zoom.transform, zoomIdentity.translate(-1100, -50));
+  zoomContainer.call(zoom.transform, zoomIdentity.translate(x, y).scale(k));
   zoomContainer.call(zoom);
  
   function zoomed(zoomEvent) {
     zoomLayer.attr('transform', zoomEvent.transform);
+    if (transformChangedEnough(zoomEvent.transform)) {
+      throttledUpdateRouteWithZoom(zoomEvent.transform);
+    }
+    lastTransform = { x: zoomEvent.transform.x, y: zoomEvent.transform.y, k: zoomEvent.transform.k };
   }
 }
 
+function transformChangedEnough(transform) {
+  if (!lastTransform) {
+    return true;
+  }
+  return Math.abs(transform.x - lastTransform.x) > 0.1 ||
+    Math.abs(transform.y - lastTransform.y) > 0.1 ||
+    Math.abs(transform.k - lastTransform.k) > 0.1;
+}
+ 
 function flagInsideDialogBox(e) {
   e.stopImmediatePropagation();
   zoom.filter(() => false);
