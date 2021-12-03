@@ -28,7 +28,7 @@ export function buildImage({ text }) {
       canvasEl.width = imgWidth;
       canvasEl.height = imgHeight;
       ctx.drawImage(resultImageEl, 0, 0, imgWidth, imgHeight);
-      canvasEl.toBlob(renderDownloadLink, 'image/png', 1.0);
+      canvasEl.toBlob(renderDownloadLink, { type: 'image/png' }, 1.0);
     }
 
     function renderDownloadLink(blob) {
