@@ -2,23 +2,20 @@ import { version } from '../package.json';
 import RouteState from 'route-state';
 import handleError from 'handle-error-web';
 import curry from 'lodash.curry';
-import kebabCase from 'lodash.kebabcase';
 import { select } from 'd3-selection';
 import { zoomIdentity, zoom as Zoom } from 'd3-zoom';
+import { buildImage } from './build-image';
 
 const DEFAULT_VALUES = {
   kerning: '0.000',
   altBg: false,
 };
-const imgWidth = 512;
-const imgHeight = 448;
 
 const advancedControlsParams = ['kerning', 'altBg', 'altBgOpacity'];
 var controlsWired = false;
 var advancedControlsAreVisible = false;
 var zoom;
 
-var faviconEl = document.querySelector('link[rel~=icon]');
 var dialogTextEl = document.querySelector('.dialog-text');
 
 var fontSizeSliderEl = document.getElementById('font-size-slider');
@@ -31,15 +28,9 @@ var formExpander = document.querySelector('.form-expander');
 var kerningSliderEl = document.getElementById('kerning-slider');
 var kerningLabelEl = document.getElementById('kerning-label');
 
-var downloadLinkEl = document.getElementById('download-link');
-
 var buildButtonEl = document.getElementById('build-button');
-var resultImageEl = document.getElementById('result-image');
-var resultSectionEl = document.querySelector('.result');
 var darkModeToggle = document.getElementById('dark-theme-toggle');
 var darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-var boardEl = document.querySelector('.board');
-var canvasEl = document.querySelector('.working-canvas');
 
 var routeState = RouteState({
   followRoute,
@@ -168,30 +159,7 @@ function updateKerningLabel() {
 }
 
 function onBuildClick() {
-  resultSectionEl.classList.remove('hidden');
-  const serializedSVG = new XMLSerializer().serializeToString(boardEl);
-
-  const dataURI = 'data:image/svg+xml;charset=utf-8,' + serializedSVG;
-  renderResult(kebabCase(dialogTextEl.textContent), dataURI);
-} 
-
-function renderResult(name, dataURL) {
-  faviconEl.href = dataURL;
-  resultImageEl.addEventListener('load', drawToCanvas);
-  resultImageEl.src = dataURL;
-
-  function drawToCanvas() {
-    var ctx = canvasEl.getContext('2d');
-    canvasEl.width = imgWidth;
-    canvasEl.height = imgHeight;
-    ctx.drawImage(resultImageEl, 0, 0, imgWidth, imgHeight);
-    canvasEl.toBlob(renderDownloadLink, 'image/png', 1.0);
-  }
-
-  function renderDownloadLink(blob) {
-    downloadLinkEl.download = name;
-    downloadLinkEl.href = window.URL.createObjectURL(blob);
-  }
+  buildImage({ text: dialogTextEl.textContent });
 }
 
 function renderVersion() {
