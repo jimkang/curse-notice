@@ -5,7 +5,8 @@ import { buildImage } from './build-image';
 import { select } from 'd3-selection';
 import { zoomIdentity, zoom as Zoom } from 'd3-zoom';
 import { updateForm, updateFontSizeLabel, updateKerningLabel, renderCollage,
-  renderVersion, toggleAdvancedControls, setThemeInfo } from './renderers';
+  renderVersion, toggleAdvancedControls, renderAdvancedControls, setThemeInfo }
+  from './renderers';
 
 const DEFAULT_VALUES = {
   kerning: '0.000',
@@ -55,15 +56,15 @@ function followRoute({
     fontSize,
     kerning,
   });
-  renderCollage({ text, fontSize, kerning });
   wireZoom();
   wireControls({
     kerning,
     altBg,
     altBgOpacity,
   });
+  renderAdvancedControls({ ctrlState });
+  renderCollage({ text, fontSize, kerning });
 }
-
 
 function wireControls({kerning, altBg, altBgOpacity}) {
   if (controlsWired) {
