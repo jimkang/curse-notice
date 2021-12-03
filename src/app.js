@@ -1,10 +1,11 @@
-import { version } from '../package.json';
 import RouteState from 'route-state';
 import handleError from 'handle-error-web';
 import curry from 'lodash.curry';
+import { buildImage } from './build-image';
 import { select } from 'd3-selection';
 import { zoomIdentity, zoom as Zoom } from 'd3-zoom';
-import { buildImage } from './build-image';
+import { updateForm, updateFontSizeLabel, updateKerningLabel, renderCollage,
+  renderVersion, toggleAdvancedControls, setThemeInfo } from './renderers';
 
 const DEFAULT_VALUES = {
   kerning: '0.000',
@@ -13,20 +14,18 @@ const DEFAULT_VALUES = {
 
 const advancedControlsParams = ['kerning', 'altBg', 'altBgOpacity'];
 var controlsWired = false;
-var advancedControlsAreVisible = false;
+var ctrlState = {
+  advancedControlsAreVisible: false
+};
 var zoom;
 
 var dialogTextEl = document.querySelector('.dialog-text');
-
 var fontSizeSliderEl = document.getElementById('font-size-slider');
-var fontSizeLabelEl = document.getElementById('font-size-label');
-
 var formEl = document.querySelector('.form');
 var advancedControls = document.querySelectorAll('.advanced-controls');
 var formExpander = document.querySelector('.form-expander');
 
 var kerningSliderEl = document.getElementById('kerning-slider');
-var kerningLabelEl = document.getElementById('kerning-label');
 
 var buildButtonEl = document.getElementById('build-button');
 var darkModeToggle = document.getElementById('dark-theme-toggle');
@@ -57,6 +56,7 @@ function followRoute({
     kerning,
   });
   renderCollage({ text, fontSize, kerning });
+  wireZoom();
   wireControls({
     kerning,
     altBg,
@@ -64,38 +64,6 @@ function followRoute({
   });
 }
 
-function renderCollage({ text, fontSize, kerning }) {
-  dialogTextEl.style.fontSize = fontSize + 'px';
-  if (text) {
-    dialogTextEl.textContent = text;
-  }
-  if (kerning) {
-    dialogTextEl.style.letterSpacing = kerning + 'em';
-  } else {
-    dialogTextEl.style.removeProperty('letter-spacing');
-  }
-
-  var zoomContainer = select('.board');
-  var zoomLayer = zoomContainer.select('.zoom-layer');
-  zoom = Zoom()
-    .scaleExtent([1, 32])
-    .on('zoom', zoomed);
-  zoomContainer.call(zoom.transform, zoomIdentity.translate(-1100, -50));
-  zoomContainer.call(zoom);
- 
-  function zoomed(zoomEvent) {
-    zoomLayer.attr('transform', zoomEvent.transform);
-  }
-}
-
-function updateForm({ text, fontSize, kerning, }) {
-  dialogTextEl.textContent = text;
-  fontSizeSliderEl.value = fontSize;
-  fontSizeLabelEl.textContent = fontSize;
-
-  kerningSliderEl.value = kerning;
-  kerningLabelEl.textContent = kerning;
-}
 
 function wireControls({kerning, altBg, altBgOpacity}) {
   if (controlsWired) {
@@ -108,9 +76,13 @@ function wireControls({kerning, altBg, altBgOpacity}) {
   );
   fontSizeSliderEl.addEventListener('change', updateFontSizeLabel);
 
-  advancedControlsAreVisible = areAdvancedControlsModified({kerning, altBg, altBgOpacity});
-  formEl.classList.toggle('expanded', advancedControlsAreVisible);
-  advancedControls.forEach(({classList}) => classList.toggle('hidden', !advancedControlsAreVisible));
+  ctrlState.advancedControlsAreVisible = areAdvancedControlsModified({
+    kerning, altBg, altBgOpacity
+  });
+  formEl.classList.toggle('expanded', ctrlState.advancedControlsAreVisible);
+  advancedControls.forEach(
+    ({classList}) => classList.toggle('hidden', !ctrlState.advancedControlsAreVisible)
+  );
   
   formExpander.classList.toggle('hidden', false);
   
@@ -122,7 +94,7 @@ function wireControls({kerning, altBg, altBgOpacity}) {
     formEl.classList.toggle('highlighted', false);
   });
   
-  formExpander.addEventListener('click', toggleAdvancedControls);
+  formExpander.addEventListener('click', () => toggleAdvancedControls({ ctrlState }));
 
   kerningSliderEl.addEventListener('input', curry(updateRoute)('kerning', kerningSliderEl));
   kerningSliderEl.addEventListener('input', updateKerningLabel);
@@ -150,20 +122,8 @@ function updateRoute(prop, inputEl, e) {
   routeState.addToRoute({ [prop]: inputEl.value });
 }
 
-function updateFontSizeLabel() {
-  fontSizeLabelEl.textContent = fontSizeSliderEl.value;
-}
-
-function updateKerningLabel() {
-  kerningLabelEl.textContent = kerningSliderEl.value.toString().padEnd(5, '0');
-}
-
 function onBuildClick() {
   buildImage({ text: dialogTextEl.textContent });
-}
-
-function renderVersion() {
-  document.getElementById('version-info').textContent = version;
 }
 
 function reportTopLevelError(msg, url, lineNo, columnNo, error) {
@@ -174,23 +134,18 @@ function areAdvancedControlsModified (controlValues) {
   return advancedControlsParams.some((param) => DEFAULT_VALUES[param] !== controlValues[param]);
 }
 
-function toggleAdvancedControls () {
-  advancedControlsAreVisible = !advancedControlsAreVisible;
-  formExpander.textContent = advancedControlsAreVisible ? 'Less' : 'More';
-  formEl.classList.toggle('expanded', advancedControlsAreVisible);
-  advancedControls.forEach(({classList}) => classList.toggle('hidden', !advancedControlsAreVisible));
-  if (advancedControlsAreVisible) {
-    advancedControls[0].querySelector('input').focus();
-  } else {
-    formEl.querySelector('input').focus();
+function wireZoom() {
+  var zoomContainer = select('.board');
+  var zoomLayer = zoomContainer.select('.zoom-layer');
+  zoom = Zoom()
+    .scaleExtent([1, 32])
+    .on('zoom', zoomed);
+  zoomContainer.call(zoom.transform, zoomIdentity.translate(-1100, -50));
+  zoomContainer.call(zoom);
+ 
+  function zoomed(zoomEvent) {
+    zoomLayer.attr('transform', zoomEvent.transform);
   }
-}
-
-function setThemeInfo() {
-  const preferAltTheme = JSON.parse(localStorage.getItem('preferAltTheme'));
-  const otherName = (darkMediaQuery.matches ? !preferAltTheme : preferAltTheme) ? 'light' : 'dark';
-  document.documentElement.classList.toggle('alt-theme', preferAltTheme);
-  darkModeToggle.textContent = `Use ${otherName} theme`;
 }
 
 function flagInsideDialogBox(e) {
