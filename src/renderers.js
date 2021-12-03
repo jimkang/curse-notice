@@ -14,7 +14,7 @@ var darkModeToggle = document.getElementById('dark-theme-toggle');
 export function renderCollage({ text, fontSize, kerning }) {
   dialogTextEl.style.fontSize = fontSize + 'px';
   if (text) {
-    dialogTextEl.textContent = text;
+    dialogTextEl.innerText = text;
   }
   if (kerning) {
     dialogTextEl.style.letterSpacing = kerning + 'em';

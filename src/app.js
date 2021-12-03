@@ -63,7 +63,7 @@ function followRoute({
     altBgOpacity,
   });
   renderAdvancedControls({ ctrlState });
-  renderCollage({ text, fontSize, kerning });
+  renderCollage({ text: decodeURIComponent(text), fontSize, kerning });
 }
 
 function wireControls({kerning, altBg, altBgOpacity}) {
@@ -73,7 +73,7 @@ function wireControls({kerning, altBg, altBgOpacity}) {
 
   fontSizeSliderEl.addEventListener(
     'input',
-    curry(updateRoute)('fontSize', fontSizeSliderEl)
+    curry(updateRoute)('fontSize', () => fontSizeSliderEl.value)
   );
   fontSizeSliderEl.addEventListener('change', updateFontSizeLabel);
 
@@ -97,7 +97,9 @@ function wireControls({kerning, altBg, altBgOpacity}) {
   
   formExpander.addEventListener('click', () => toggleAdvancedControls({ ctrlState }));
 
-  kerningSliderEl.addEventListener('input', curry(updateRoute)('kerning', kerningSliderEl));
+  kerningSliderEl.addEventListener('input', 
+    curry(updateRoute)('kerning', () => kerningSliderEl.value)
+  );
   kerningSliderEl.addEventListener('input', updateKerningLabel);
   buildButtonEl.addEventListener('click', onBuildClick);
 
@@ -115,12 +117,14 @@ function wireControls({kerning, altBg, altBgOpacity}) {
   dialogTextEl.addEventListener('click', flagInsideDialogBox);
   document.body.addEventListener('click', unflagInsideDialogBox);
 
+  dialogTextEl.addEventListener('blur', curry(updateRoute)('text', getText));
+
   controlsWired = true;
 }
 
-function updateRoute(prop, inputEl, e) {
+function updateRoute(prop, getVal, e) {
   e.composing;
-  routeState.addToRoute({ [prop]: inputEl.value });
+  routeState.addToRoute({ [prop]: getVal() });
 }
 
 function onBuildClick() {
@@ -156,5 +160,10 @@ function flagInsideDialogBox(e) {
 
 function unflagInsideDialogBox() {
   zoom.filter(() => true);
+}
+
+function getText() {
+  // innerText keeps line breaks. textContent doesn't.
+  return encodeURIComponent(dialogTextEl.innerText);
 }
 
