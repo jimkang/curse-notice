@@ -10,8 +10,12 @@ var advancedControls = document.querySelectorAll('.advanced-controls');
 var formEl = document.querySelector('.form');
 var darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 var darkModeToggle = document.getElementById('dark-theme-toggle');
+var nightEl = document.getElementById('night');
+var dayEl = document.getElementById('day');
+var nightImageEl = document.querySelector('.night-image');
+var dayImageEl = document.querySelector('.day-image');
 
-export function renderCollage({ text, fontSize, kerning }) {
+export function renderCollage({ text, fontSize, kerning, nightOrDay }) {
   dialogTextEl.style.fontSize = fontSize + 'px';
   if (text) {
     dialogTextEl.innerText = text;
@@ -21,6 +25,11 @@ export function renderCollage({ text, fontSize, kerning }) {
   } else {
     dialogTextEl.style.removeProperty('letter-spacing');
   }
+
+  nightEl.checked = nightOrDay !== 'day';
+  dayEl.checked = nightOrDay === 'day';
+  nightImageEl.classList[nightOrDay === 'day' ? 'add' : 'remove']('hidden');
+  dayImageEl.classList[nightOrDay !== 'day' ? 'add' : 'remove']('hidden');
 }
 
 export function updateForm({ text, fontSize, kerning, }) {

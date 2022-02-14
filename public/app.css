@@ -314,6 +314,16 @@ button:focus {
   border-radius: 0 0.25rem 0.25rem 0;
 }
 
+.radio-row {
+  display: flex;
+}
+
+.radio-row input {
+  width: 1rem;
+  margin-top: 0.25rem;
+}
+
+
 footer {
   text-align: center;
   margin-bottom: 4rem;

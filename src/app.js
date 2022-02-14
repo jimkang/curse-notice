@@ -11,10 +11,10 @@ import { updateForm, updateFontSizeLabel, updateKerningLabel, renderCollage,
 
 const DEFAULT_VALUES = {
   kerning: '0.000',
-  altBg: false,
+  nightOrDay: 'night',
 };
 
-const advancedControlsParams = ['kerning', 'altBg', 'altBgOpacity'];
+const advancedControlsParams = ['kerning'];
 var controlsWired = false;
 var ctrlState = {
   advancedControlsAreVisible: false
@@ -34,11 +34,13 @@ var kerningSliderEl = document.getElementById('kerning-slider');
 var buildButtonEl = document.getElementById('build-button');
 var darkModeToggle = document.getElementById('dark-theme-toggle');
 var darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+var nightEl = document.getElementById('night');
+var dayEl = document.getElementById('day');
 
 var routeState = RouteState({
   followRoute,
   windowObject: window,
-  propsToCoerceToBool: ['altBg'],
+  //propsToCoerceToBool: ['altBg'],
 });
 
 var throttledUpdateRouteWithZoom = throttle(updateRouteWithZoom, 500);
@@ -53,8 +55,7 @@ function followRoute({
   text = 'WHAT A HORRIBLE NIGHT TO HAVE A CURSE.',
   fontSize = 22,
   kerning = DEFAULT_VALUES.kerning,
-  altBg = DEFAULT_VALUES.altBg,
-  altBgOpacity = DEFAULT_VALUES.altBgOpacity,
+  nightOrDay = DEFAULT_VALUES.nightOrDay,
   x = -1100,
   y = -150,
   k = 1.0  
@@ -67,14 +68,14 @@ function followRoute({
   wireZoom({ x: +x, y: +y, k: +k });
   wireControls({
     kerning,
-    altBg,
-    altBgOpacity,
+    nightOrDay,
   });
+
   renderAdvancedControls({ ctrlState });
-  renderCollage({ text: decodeURIComponent(text), fontSize, kerning });
+  renderCollage({ text: decodeURIComponent(text), fontSize, kerning, nightOrDay });
 }
 
-function wireControls({kerning, altBg, altBgOpacity}) {
+function wireControls({ kerning }) {
   if (controlsWired) {
     return;
   }
@@ -86,7 +87,7 @@ function wireControls({kerning, altBg, altBgOpacity}) {
   fontSizeSliderEl.addEventListener('change', updateFontSizeLabel);
 
   ctrlState.advancedControlsAreVisible = areAdvancedControlsModified({
-    kerning, altBg, altBgOpacity
+    kerning
   });
   formEl.classList.toggle('expanded', ctrlState.advancedControlsAreVisible);
   advancedControls.forEach(
@@ -110,6 +111,13 @@ function wireControls({kerning, altBg, altBgOpacity}) {
   );
   kerningSliderEl.addEventListener('input', updateKerningLabel);
   buildButtonEl.addEventListener('click', onBuildClick);
+
+  nightEl.addEventListener('click', 
+    curry(updateRoute)('nightOrDay', () => nightEl.value)
+  );
+  dayEl.addEventListener('click', 
+    curry(updateRoute)('nightOrDay', () => dayEl.value)
+  );
 
   setThemeInfo();
   darkMediaQuery.addEventListener('change', () => {
